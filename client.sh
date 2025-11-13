@@ -45,7 +45,7 @@ project_root="$(cd "${script_dir}/.." && pwd)"
 # Setup Xhost permission
 if [[ "${ALLOW_XHOST}" == "1" && -n "${DISPLAY:-}" && -x "$(command -v xhost)" ]]; then
   # Allow local user to access X server
-  xhost +SI:localuser:"${USER}" >/dev/null 2>&1 || true
+  xhost + >/dev/null 2>&1 || true
 fi
 
 # Common Docker arguments
