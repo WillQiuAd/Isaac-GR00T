@@ -124,3 +124,5 @@ tmp/
 output/
 
 *so101-checkpoints*
+*so101-*
+*Pick-Green-Cube*
