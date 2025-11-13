@@ -46,6 +46,7 @@ import logging
 import time
 from dataclasses import asdict, dataclass
 from pprint import pformat
+import cv2
 
 import draccus
 import matplotlib.pyplot as plt
@@ -66,9 +67,11 @@ from lerobot.utils.utils import init_logging, log_say
 # User can just move this single python class method gr00t/eval/service.py
 # to their code or do the following line below
 # sys.path.append(os.path.expanduser("~/Isaac-GR00T/gr00t/eval/"))
-from service import ExternalRobotInferenceClient
+# from service import ExternalRobotInferenceClient
 
-# from gr00t.eval.service import ExternalRobotInferenceClient
+import sys
+sys.path.insert(0, "/workspace/Isaac-GR00T")
+from gr00t.eval.service import ExternalRobotInferenceClient
 
 #################################################################################
 
@@ -225,19 +228,45 @@ def eval(cfg: EvalConfig):
         blocking=True,
     )
 
+    screen_w, screen_h = 1920, 1080
+    cv2.namedWindow("Robot Camera View", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Robot Camera View", screen_w, screen_h)
+    cv2.setWindowProperty("Robot Camera View", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    
     # Step 3: Run the Eval Loop
     while True:
-        # get the realtime image
+        # Get the realtime image
         observation_dict = robot.get_observation()
-        print("observation_dict", observation_dict.keys())
-        action_chunk = policy.get_action(observation_dict, language_instruction)
+        front_frame = cv2.cvtColor(observation_dict.get("front").copy(), cv2.COLOR_RGB2BGR)
+        wrist_frame = cv2.cvtColor(observation_dict.get("wrist").copy(), cv2.COLOR_RGB2BGR)
 
+        #  Resize frames to the same size if they differ
+        if front_frame.shape[:2] != wrist_frame.shape[:2]:
+            h = min(front_frame.shape[0], wrist_frame.shape[0])
+            w = min(front_frame.shape[1], wrist_frame.shape[1])
+            front_frame = cv2.resize(front_frame, (w, h))
+            wrist_frame = cv2.resize(wrist_frame, (w, h))
+
+        # Combine frames side by side
+        combined = cv2.hconcat([front_frame, wrist_frame])
+        display_frame = cv2.resize(combined, (screen_w, screen_h))
+        cv2.imshow("Robot Camera View", display_frame)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        # print("observation_dict", observation_dict.keys())
+        # start = time.time()
+        action_chunk = policy.get_action(observation_dict, language_instruction)
         for i in range(cfg.action_horizon):
             action_dict = action_chunk[i]
             print("action_dict", action_dict.keys())
             robot.send_action(action_dict)
-            time.sleep(0.02)  # Implicitly wait for the action to be executed
-
+            time.sleep(0.02) # Implicitly wait for the action to be executed
+            if i == 0:
+                print(f"Time taken for one eval step: {time.time() - start:.2f} seconds")
+            elif i == 4: 
+                break  # only execute half of the action chunk
 
 if __name__ == "__main__":
     eval()

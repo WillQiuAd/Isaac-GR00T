@@ -18,6 +18,13 @@ import random
 from typing import Any, ClassVar
 
 import numpy as np
+
+import sys, os
+repo_root = "/workspace/Isaac-GR00T"
+inner_pkg = os.path.join(repo_root, "pytorch3d")
+if inner_pkg not in sys.path:
+    sys.path.insert(0, inner_pkg)
+    
 import pytorch3d.transforms as pt
 import torch
 from pydantic import Field, PrivateAttr, field_validator, model_validator

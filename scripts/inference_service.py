@@ -54,6 +54,9 @@ Note: TensorRT engines must be built before running with --use-tensorrt flag.
 See deployment_scripts/README.md for instructions on building TensorRT engines.
 """
 
+import sys
+sys.path.insert(0, "/workspace")  # to import gr00t module
+
 import time
 from dataclasses import dataclass
 from typing import Literal
