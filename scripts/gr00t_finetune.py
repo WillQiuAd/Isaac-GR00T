@@ -54,7 +54,7 @@ class ArgsConfig:
     """
 
     # Training parameters
-    batch_size: int = 32
+    batch_size: int = 16 #32
     """Batch size per GPU for training."""
 
     max_steps: int = 10000
@@ -107,7 +107,7 @@ class ArgsConfig:
     lora_full_model: bool = False
     """Whether to use the full model for LORA. If False, only the action head will be trained."""
 
-    dataloader_num_workers: int = 12
+    dataloader_num_workers: int = 8 #12
     """Number of workers for data loading per GPU."""
 
     gradient_accumulation_steps: int = 1

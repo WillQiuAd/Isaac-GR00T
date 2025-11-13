@@ -27,6 +27,7 @@ from gr00t.model.transforms import DefaultDataCollator
 from gr00t.utils.experiment import (
     CheckpointFormatCallback,
     safe_save_model_for_hf_trainer,
+    SaveBestOnTrainLossCallback,
 )
 
 
@@ -154,6 +155,12 @@ class TrainRunner:
             run_name=run_name, exp_cfg_dir=self.exp_cfg_dir
         )
         trainer.add_callback(ckpt_format_callback)
+
+        #########################################################################################
+        # Add callback to save best model based on training loss
+        best_dir = os.path.join(training_args.output_dir, "best-train-loss")
+        best_loss_cb = SaveBestOnTrainLossCallback(trainer, best_dir)
+        trainer.add_callback(best_loss_cb)
 
         # Log dataloader information
         train_dl_len = len(trainer.get_train_dataloader())

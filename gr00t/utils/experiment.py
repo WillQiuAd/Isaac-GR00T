@@ -18,7 +18,7 @@ from pathlib import Path
 
 import torch
 from transformers import Trainer, TrainerCallback
-
+import math, os
 
 def safe_save_model_for_hf_trainer(trainer: Trainer, output_dir: str):
     """Collects the state dict and dump to disk."""
@@ -60,3 +60,31 @@ class CheckpointFormatCallback(TrainerCallback):
                 exp_cfg_dst = checkpoint_dir / self.exp_cfg_dir.name
                 if self.exp_cfg_dir.exists():
                     shutil.copytree(self.exp_cfg_dir, exp_cfg_dst, dirs_exist_ok=True)
+
+#######################################################################################
+class SaveBestOnTrainLossCallback(TrainerCallback):
+    """Callback to save the best model based on training loss."""
+
+    def __init__(self, trainer: Trainer, best_dir: str, start_step: int = 1000):
+        self.trainer = trainer
+        self.best_dir = best_dir
+        self.start_step = start_step
+        os.makedirs(best_dir, exist_ok=True)
+        self.best_loss = math.inf
+
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        # Only trigger on main process + if loss is present
+        if not args.should_save or not logs:
+            return
+
+        if state.global_step < self.start_step:
+            return
+            
+        cur_loss = logs.get("loss")
+        if cur_loss is None:
+            return
+
+        if cur_loss < self.best_loss:
+            self.best_loss = cur_loss
+            self.trainer.save_model(self.best_dir, _internal_call=True)  # Saves the tokenizer too for easy upload
+            print(f"[🏆Best Train Loss Callback] Saved new best model: (loss={cur_loss:.6f})")
