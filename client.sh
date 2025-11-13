@@ -4,16 +4,11 @@ set -Eeuo pipefail
 # ===================================================
 # Global Variables
 CLIENT_DOCKER_NAME="${CLIENT_DOCKER_NAME:-isaac-gr00t-thor-client}"
-SERVER_DOCKER_NAME="${SERVER_DOCKER_NAME:-isaac-gr00t-thor-server}"
 CLIENT_IMAGE_NAME="${CLIENT_IMAGE_NAME:-${CLIENT_DOCKER_NAME}:dev}"
-SERVER_IMAGE_NAME="${SERVER_IMAGE_NAME:-${SERVER_DOCKER_NAME}:dev}"
 WORKSPACE="${WORKSPACE:-/workspace}"
 
 # Infer parameters
-MODEL_PATH="${MODEL_PATH:-so101-checkpoints-grab-pen-wrist-b16-d8-diffusion-tune-best/best-train-loss}"
-EMBODIMENT_TAG="${EMBODIMENT_TAG:-new_embodiment}"
 DATA_CONFIG="${DATA_CONFIG:-so100_dualcam}"
-DENOISING_STEPS="${DENOISING_STEPS:-4}"
 
 # Robot / Camera settings
 ROBOT_TYPE="${ROBOT_TYPE:-so101_follower}"
@@ -57,7 +52,7 @@ fi
 COMMON_DOCKER_ARGS=(
   --privileged
   --rm
-  -dt
+  -it
   --net=host
   --ipc=host
   -e "DISPLAY=${DISPLAY:-}"
@@ -73,40 +68,11 @@ COMMON_DOCKER_ARGS=(
 cleanup() {
   log "Stopping containers…"
   docker stop "${CLIENT_DOCKER_NAME}" >/dev/null 2>&1 || true
-  docker stop "${SERVER_DOCKER_NAME}" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
 # Stop existing containers if running
-docker ps -a --format '{{.Names}}' | grep -q "^${SERVER_DOCKER_NAME}$" && docker stop "${SERVER_DOCKER_NAME}" || true
 docker ps -a --format '{{.Names}}' | grep -q "^${CLIENT_DOCKER_NAME}$" && docker stop "${CLIENT_DOCKER_NAME}" || true
-
-# ===================================================
-# SERVER COMMAND
-SERVER_CMD=(
-  bash -lc
-  "python scripts/inference_service.py --server \
-    --model_path '${MODEL_PATH}' \
-    --embodiment-tag '${EMBODIMENT_TAG}' \
-    --data-config '${DATA_CONFIG}' \
-    --denoising-steps ${DENOISING_STEPS}"
-)
-
-cmd=$(printf '%q ' docker run --name "${SERVER_DOCKER_NAME}" \
-  "${DOCKER_GPU_ARGS[@]}" \
-  "${COMMON_DOCKER_ARGS[@]}" \
-  -v "${script_dir}:${WORKSPACE}:rw" \
-  "${SERVER_IMAGE_NAME}" \
-  "${SERVER_CMD[@]}")
-
-echo "------------------------------------------------------------"
-echo "[RUN] $cmd"
-echo "------------------------------------------------------------"
-
-# Run server container
-eval "$cmd"
-
-sleep 3
 
 # ===================================================
 # CLIENT COMMAND

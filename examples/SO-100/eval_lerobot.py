@@ -228,7 +228,7 @@ def eval(cfg: EvalConfig):
         blocking=True,
     )
 
-    screen_w, screen_h = 1920, 1080
+    screen_w, screen_h = 640, 480
     cv2.namedWindow("Robot Camera View", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Robot Camera View", screen_w, screen_h)
     cv2.setWindowProperty("Robot Camera View", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
@@ -250,7 +250,7 @@ def eval(cfg: EvalConfig):
         # Combine frames side by side
         combined = cv2.hconcat([front_frame, wrist_frame])
         display_frame = cv2.resize(combined, (screen_w, screen_h))
-        cv2.imshow("Robot Camera View", display_frame)
+        cv2.imshow("Robot Camera View", combined)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -263,9 +263,7 @@ def eval(cfg: EvalConfig):
             print("action_dict", action_dict.keys())
             robot.send_action(action_dict)
             time.sleep(0.02) # Implicitly wait for the action to be executed
-            if i == 0:
-                print(f"Time taken for one eval step: {time.time() - start:.2f} seconds")
-            elif i == 4: 
+            if i == 4: 
                 break  # only execute half of the action chunk
 
 if __name__ == "__main__":
