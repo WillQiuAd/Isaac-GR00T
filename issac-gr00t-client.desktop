@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Issac-GR00T-CLINET
+Comment=Run GR00T CLINET
+Exec=bash /home/ubuntu/Isaac-GR00T/client.sh
+Icon=/home/ubuntu/Isaac-GR00T/robotic-arm.png
+Terminal=true
+Categories=Application;

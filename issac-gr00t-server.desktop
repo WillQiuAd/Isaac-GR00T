@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Issac-GR00T-SERVER
+Comment=Run GR00T SERVER
+Exec=bash /home/ubuntu/Isaac-GR00T/server.sh
+Icon=/home/ubuntu/Isaac-GR00T/ai-assistant.png
+Terminal=true
+Categories=Application;
