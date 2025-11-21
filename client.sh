@@ -28,6 +28,9 @@ LANG_INSTRUCTION="${LANG_INSTRUCTION:-Grab the pen and put it in the box}"
 # HF cache paths
 CALIB_DIR_CONT="${CALIB_DIR_CONT:-$WORKSPACE/.cache/huggingface/lerobot/calibration/robots/so101_follower}"
 
+# Policy host
+POLICY_HOST="${POLICY_HOST:-0.0.0.0}"
+
 # Xhost permission
 ALLOW_XHOST="${ALLOW_XHOST:-1}"
 
@@ -87,7 +90,7 @@ python examples/SO-100/eval_lerobot.py \
   --robot.id="${ROBOT_ID}" \
   --robot.calibration_dir "${CALIB_DIR_CONT}" \
   --robot.cameras="${ROBOT_CAMERAS}" \
-  --policy_host=0.0.0.0 \
+  --policy_host=${POLICY_HOST} \
   --lang_instruction="${LANG_INSTRUCTION}"
 EOS
 )
