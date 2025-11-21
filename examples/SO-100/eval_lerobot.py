@@ -61,6 +61,7 @@ from lerobot.robots import (  # noqa: F401
     so101_follower,
 )
 from lerobot.utils.utils import init_logging, log_say
+import datetime
 
 # NOTE:
 # Sometimes we would like to abstract different env, or run this on a separate machine
@@ -260,7 +261,10 @@ def eval(cfg: EvalConfig):
         action_chunk = policy.get_action(observation_dict, language_instruction)
         for i in range(cfg.action_horizon):
             action_dict = action_chunk[i]
-            print("action_dict", action_dict.keys())
+            ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            preview = {k: v for k, v in action_dict.items()}
+            print(f"[{ts}] [{i}] {preview}")
+            # print("action_dict", action_dict.keys())
             robot.send_action(action_dict)
             time.sleep(0.02) # Implicitly wait for the action to be executed
             if i == 4: 
