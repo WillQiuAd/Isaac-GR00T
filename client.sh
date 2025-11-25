@@ -23,7 +23,7 @@ CAM_HEIGHT="${CAM_HEIGHT:-480}"
 CAM_FPS="${CAM_FPS:-30}"
 
 # Language instruction
-LANG_INSTRUCTION="${LANG_INSTRUCTION:-Grab the pen and put it in the box}"
+LANG_INSTRUCTION="${LANG_INSTRUCTION:-Pick the cube and put it in the bucket}"
 
 # HF cache paths
 CALIB_DIR_CONT="${CALIB_DIR_CONT:-$WORKSPACE/.cache/huggingface/lerobot/calibration/robots/so101_follower}"
