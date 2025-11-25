@@ -22,9 +22,11 @@ WORKDIR /workspace
 COPY pyproject.toml .
 # Install dependencies from pyproject.toml
 RUN pip install -e .[base]
+RUN pip install packaging ninja
 # There's a conflict in the native python, so we have to resolve it by
 RUN pip uninstall -y transformer-engine
-RUN pip install flash_attn==2.7.1.post4 -U --force-reinstall
+RUN MAX_JOBS=4 pip install --no-build-isolation \
+    flash_attn==2.7.1.post4 -U --force-reinstall
 # Clean any existing OpenCV installations
 RUN pip uninstall -y opencv-python opencv-python-headless || true
 RUN rm -rf /usr/local/lib/python3.10/dist-packages/cv2 || true

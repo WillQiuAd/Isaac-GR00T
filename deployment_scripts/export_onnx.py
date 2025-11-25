@@ -1618,7 +1618,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--video-backend",
         type=str,
-        choices=["decord", "torchcodec"],
+        choices=["decord", "torchcodec", "opencv", "torchvision_av"],
         help="Video backend to use for loading video frames",
         default="decord",
     )
