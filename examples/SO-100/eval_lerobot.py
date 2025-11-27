@@ -187,7 +187,7 @@ class EvalConfig:
     robot: RobotConfig  # the robot to use
     policy_host: str = "localhost"  # host of the gr00t server
     policy_port: int = 5555  # port of the gr00t server
-    action_horizon: int = 8  # number of actions to execute from the action chunk
+    action_horizon: int = 16  # number of actions to execute from the action chunk
     lang_instruction: str = "Grab pens and place into pen holder."
     play_sounds: bool = False  # whether to play sounds
     timeout: int = 60  # timeout in seconds
@@ -267,8 +267,11 @@ def eval(cfg: EvalConfig):
             # print("action_dict", action_dict.keys())
             robot.send_action(action_dict)
             time.sleep(0.02) # Implicitly wait for the action to be executed
-            if i == 4: 
-                break  # only execute half of the action chunk
+            # if i == 15: 
+            #     diff_time = time.time() - start
+            #     print(f"time taken: {diff_time }")
+            #     print(f"fps: {1.0 / diff_time}")
+            #     break  # only execute half of the action chunk
 
 if __name__ == "__main__":
     eval()
