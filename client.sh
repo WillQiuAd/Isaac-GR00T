@@ -3,8 +3,8 @@ set -Eeuo pipefail
 
 # ===================================================
 # Global Variables
-CLIENT_DOCKER_NAME="${CLIENT_DOCKER_NAME:-isaac-gr00t-thor-client}"
-CLIENT_IMAGE_NAME="${CLIENT_IMAGE_NAME:-${CLIENT_DOCKER_NAME}:dev}"
+CLIENT_DOCKER_NAME="${CLIENT_DOCKER_NAME:-isaac-gr00t-client}"
+CLIENT_IMAGE_NAME="${CLIENT_IMAGE_NAME:-advigw/${CLIENT_DOCKER_NAME}:thor-dev}"
 WORKSPACE="${WORKSPACE:-/workspace}"
 
 # Infer parameters
@@ -76,6 +76,21 @@ trap cleanup EXIT
 
 # Stop existing containers if running
 docker ps -a --format '{{.Names}}' | grep -q "^${CLIENT_DOCKER_NAME}$" && docker stop "${CLIENT_DOCKER_NAME}" || true
+
+# # ===================================================
+# # SETTING SPECIAL CAMERA
+# CAM0_NAME=$(v4l2-ctl -d /dev/video0 --all 2>/dev/null | grep "Name" | awk -F ':' '{print $2}' | xargs)
+# CAM2_NAME=$(v4l2-ctl -d /dev/video2 --all 2>/dev/null | grep "Name" | awk -F ':' '{print $2}' | xargs)
+
+# echo "------------------------------------------------------------"
+# log "video0 = $CAM0_NAME"
+# log "video2 = $CAM2_NAME"
+# echo "------------------------------------------------------------"
+
+# if [[ "$CAM0_NAME" == *"HD-3000"* ]]; then
+#     FRONT_CAM_INDEX=2
+#     WRIST_CAM_INDEX=0
+# fi
 
 # ===================================================
 # CLIENT COMMAND

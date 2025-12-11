@@ -3,8 +3,8 @@ set -Eeuo pipefail
 
 # ===================================================
 # Global Variables
-SERVER_DOCKER_NAME="${SERVER_DOCKER_NAME:-isaac-gr00t-thor-server}"
-SERVER_IMAGE_NAME="${SERVER_IMAGE_NAME:-${SERVER_DOCKER_NAME}:dev}"
+SERVER_DOCKER_NAME="${SERVER_DOCKER_NAME:-isaac-gr00t-server}"
+SERVER_IMAGE_NAME="${SERVER_IMAGE_NAME:-advigw/${SERVER_DOCKER_NAME}:thor-dev}"
 WORKSPACE="${WORKSPACE:-/workspace}"
 
 # Infer parameters
@@ -62,6 +62,20 @@ SERVER_CMD=(
     --data-config '${DATA_CONFIG}' \
     --denoising-steps ${DENOISING_STEPS}"
 )
+
+# SERVER_CMD=(
+#   bash -lc
+#   "python scripts/inference_service.py --server \
+#     --model_path '${MODEL_PATH}' \
+#     --embodiment-tag '${EMBODIMENT_TAG}' \
+#     --data-config '${DATA_CONFIG}' \
+#     --trt-engine-path gr00t_engine \
+#     --denoising-steps ${DENOISING_STEPS} \
+#     --use-tensorrt \
+#     --llm-dtype nvfp4 \
+#     --vit-dtype fp8 \
+#     --dit-dtype fp8"
+# )
 
 cmd=$(printf '%q ' docker run --name "${SERVER_DOCKER_NAME}" \
   "${DOCKER_GPU_ARGS[@]}" \
